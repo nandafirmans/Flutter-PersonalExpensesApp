@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:personal_expenses_app/models/transaction.dart';
@@ -60,16 +62,29 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
-
-    final appBar = AppBar(
-      title: Text('Personal Expenses'),
-      actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () => _showNewTransactionForm(context),
-        )
-      ],
-    );
+    final appTitle = Text('Personal Expenses');
+    final PreferredSizeWidget appBar = Platform.isIOS
+        ? CupertinoNavigationBar(
+            middle: appTitle,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                GestureDetector(
+                  child: Icon(CupertinoIcons.add),
+                  onTap: () => _showNewTransactionForm(context),
+                )
+              ],
+            ),
+          )
+        : AppBar(
+            title: appTitle,
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () => _showNewTransactionForm(context),
+              )
+            ],
+          );
 
     final mainWidgetHeight = (mediaQuery.size.height -
         mediaQuery.padding.top -
@@ -90,34 +105,47 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
 
-    return Scaffold(
-      appBar: appBar,
-      body: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            if (isLandscape)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text('Show Chart'),
-                  Switch(
-                    value: _isShowChart,
-                    onChanged: (val) => setState(() => _isShowChart = val),
-                  )
-                ],
-              ),
-            if (isLandscape)
-              if (_isShowChart) chartTransactions else transactionList,
-            if (!isLandscape) chartTransactions,
-            if (!isLandscape) transactionList
-          ]),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => _showNewTransactionForm(context),
+    final pageBody = SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: isLandscape
+            ? <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Show Chart',
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                    Switch.adaptive(
+                      value: _isShowChart,
+                      onChanged: (val) => setState(() => _isShowChart = val),
+                    )
+                  ],
+                ),
+                if (_isShowChart) chartTransactions else transactionList,
+              ]
+            : [chartTransactions, transactionList],
       ),
     );
+
+    return Platform.isIOS
+        ? CupertinoPageScaffold(
+            navigationBar: appBar,
+            child: pageBody,
+          )
+        : Scaffold(
+            appBar: appBar,
+            body: pageBody,
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: FloatingActionButton(
+              child: Icon(Icons.add),
+              onPressed: () => _showNewTransactionForm(context),
+            ),
+          );
   }
 }

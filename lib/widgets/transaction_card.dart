@@ -35,13 +35,21 @@ class TransactionCard extends StatelessWidget {
         ),
         title: Text(
           "${transaction.title} - IDR ${NumberFormat("#,###").format(transaction.amount)}",
-          style: Theme.of(context).textTheme.title,
+          style: Theme.of(context).textTheme.headline6,
         ),
         subtitle: Text(DateFormat.yMMMd().format(transaction.date)),
-        trailing: IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: _removeTransaction,
-        ),
+        trailing: MediaQuery.of(context).size.width > 460
+            ? FlatButton.icon(
+                icon: Icon(Icons.delete),
+                label: Text('Delete'),
+                textColor: Theme.of(context).errorColor,
+                onPressed: _removeTransaction,
+              )
+            : IconButton(
+                icon: Icon(Icons.delete),
+                color: Theme.of(context).errorColor,
+                onPressed: _removeTransaction,
+              ),
       ),
     );
   }

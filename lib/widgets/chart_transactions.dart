@@ -13,12 +13,12 @@ class ChartTransactions extends StatelessWidget {
 
   List<Chart> get _groupedTransactionValues {
     return List.generate(7, (index) {
-      final weekDay = DateTime.now().subtract(
+      final DateTime weekDay = DateTime.now().subtract(
         Duration(
           days: index,
         ),
       );
-      final transactionsWeekDay = transaction.where((t) =>
+      final Iterable<Transaction> transactionsWeekDay = transaction.where((t) =>
           (t.date.day == weekDay.day &&
               t.date.month == weekDay.month &&
               t.date.year == weekDay.year &&
@@ -52,8 +52,7 @@ class ChartTransactions extends StatelessWidget {
         padding: EdgeInsets.all(15),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: this
-              ._groupedTransactionValues
+          children: _groupedTransactionValues
               .map((t) => Flexible(
                     fit: FlexFit.tight,
                     child: ChartBar(

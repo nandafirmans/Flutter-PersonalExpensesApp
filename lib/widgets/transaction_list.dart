@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:personal_expenses_app/models/transaction.dart';
 import 'package:personal_expenses_app/widgets/transaction_card.dart';
@@ -11,37 +12,47 @@ class TransactionList extends StatelessWidget {
     this.removeTransaction,
   });
 
+  Widget _renderChild(BuildContext context) {
+    if (transactions.isEmpty) {
+      return LayoutBuilder(
+        builder: (context, constraints) => Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            FittedBox(
+              child: Text(
+                "No transactions added yet!",
+                style: Theme.of(context).textTheme.headline6,
+              ),
+            ),
+            SizedBox(
+              height: constraints.maxHeight * 0.2,
+            ),
+            Container(
+              height: constraints.maxHeight * 0.6,
+              child: Image.asset(
+                "assets/image/waiting.png",
+                fit: BoxFit.cover,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      itemBuilder: (ctx, index) => TransactionCard(
+        transaction: transactions[index],
+        removeTransaction: removeTransaction,
+      ),
+      itemCount: transactions.length,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
       flex: 1,
-      child: transactions.isEmpty
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "No transactions added yet!",
-                  style: Theme.of(context).textTheme.title,
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Container(
-                  height: 100,
-                  child: Image.asset(
-                    "assets/image/waiting.png",
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ],
-            )
-          : ListView.builder(
-              itemBuilder: (ctx, index) => TransactionCard(
-                transaction: transactions[index],
-                removeTransaction: removeTransaction,
-              ),
-              itemCount: transactions.length,
-            ),
+      child: _renderChild(context),
     );
   }
 }

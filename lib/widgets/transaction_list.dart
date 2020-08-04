@@ -7,7 +7,7 @@ class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
   final Function removeTransaction;
 
-  TransactionList({
+  const TransactionList({
     this.transactions,
     this.removeTransaction,
   });

@@ -1,8 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:personal_expenses_app/models/transaction.dart';
 
-class TransactionCard extends StatelessWidget {
+class TransactionCard extends StatefulWidget {
   // const is a variables/properties that value can never change even at the compile times.
   static const String test = "";
 
@@ -13,12 +15,34 @@ class TransactionCard extends StatelessWidget {
   // const constructor can be done if every fields on a class is using final/const variable.
   // basically all stateless widget are immutable so this const constructor is not necessary.
   const TransactionCard({
+    Key key,
     this.transaction,
     this.removeTransaction,
-  });
+  }) : super(key: key);
+
+  @override
+  _TransactionCardState createState() => _TransactionCardState();
+}
+
+class _TransactionCardState extends State<TransactionCard> {
+  Color _backgroundColor;
+  static const List<Color> _availableColors = [
+    Colors.red,
+    Colors.black,
+    Colors.blue,
+    Colors.purple,
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    final randomColorIndex = Random().nextInt(_availableColors.length);
+    _backgroundColor = _availableColors[randomColorIndex];
+  }
 
   void _removeTransaction() {
-    removeTransaction(transaction.id);
+    widget.removeTransaction(widget.transaction.id);
   }
 
   @override
@@ -27,23 +51,25 @@ class TransactionCard extends StatelessWidget {
       elevation: 3,
       child: ListTile(
         leading: CircleAvatar(
+          backgroundColor: _backgroundColor,
           radius: 30,
           child: Padding(
             padding: const EdgeInsets.all(6),
             child: Text(
-              NumberFormat.compact().format(transaction.amount),
+              NumberFormat.compact().format(widget.transaction.amount),
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
+                color: Colors.white
               ),
             ),
           ),
         ),
         title: Text(
-          "${transaction.title} - IDR ${NumberFormat("#,###").format(transaction.amount)}",
+          "${widget.transaction.title} - IDR ${NumberFormat("#,###").format(widget.transaction.amount)}",
           style: Theme.of(context).textTheme.headline6,
         ),
-        subtitle: Text(DateFormat.yMMMd().format(transaction.date)),
+        subtitle: Text(DateFormat.yMMMd().format(widget.transaction.date)),
         trailing: MediaQuery.of(context).size.width > 460
             ? FlatButton.icon(
                 // creating an object with constant expression can skip an unnecessary widgets rebuild.

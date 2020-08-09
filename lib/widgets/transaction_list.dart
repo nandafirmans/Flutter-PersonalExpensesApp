@@ -12,47 +12,45 @@ class TransactionList extends StatelessWidget {
     this.removeTransaction,
   });
 
-  Widget _renderChild(BuildContext context) {
-    if (transactions.isEmpty) {
-      return LayoutBuilder(
-        builder: (context, constraints) => Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            FittedBox(
-              child: Text(
-                "No transactions added yet!",
-                style: Theme.of(context).textTheme.headline6,
+  Widget _buildChild(BuildContext context) => transactions.isEmpty
+      ? LayoutBuilder(
+          builder: (context, constraints) => Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              FittedBox(
+                child: Text(
+                  "No transactions added yet!",
+                  style: Theme.of(context).textTheme.headline6,
+                ),
               ),
-            ),
-            SizedBox(
-              height: constraints.maxHeight * 0.2,
-            ),
-            Container(
-              height: constraints.maxHeight * 0.6,
-              child: Image.asset(
-                "assets/image/waiting.png",
-                fit: BoxFit.cover,
+              SizedBox(
+                height: constraints.maxHeight * 0.2,
               ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.builder(
-      itemBuilder: (ctx, index) => TransactionCard(
-        transaction: transactions[index],
-        removeTransaction: removeTransaction,
-      ),
-      itemCount: transactions.length,
-    );
-  }
+              Container(
+                height: constraints.maxHeight * 0.6,
+                child: Image.asset(
+                  "assets/image/waiting.png",
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
+          ),
+        )
+      : ListView(
+          children: transactions
+              .map((trx) => TransactionCard(
+                    key: ValueKey(trx.id),
+                    transaction: trx,
+                    removeTransaction: removeTransaction,
+                  ))
+              .toList(),
+        );
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       flex: 1,
-      child: _renderChild(context),
+      child: _buildChild(context),
     );
   }
 }

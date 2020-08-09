@@ -18,6 +18,24 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
   final amountController = TextEditingController();
   DateTime _selectedDate;
 
+  @override
+  void initState() {
+    super.initState();
+    print('NewTransactionState initState()');
+  }
+
+  @override
+  void didUpdateWidget(NewTransactionForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print('NewTransactionState didUpdateWidget()');
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    print('NewTransactionState dispose()');
+  }
+
   void _onBtnAddPress() {
     final title = titleController.text;
     final amount = double.tryParse(amountController.text);
